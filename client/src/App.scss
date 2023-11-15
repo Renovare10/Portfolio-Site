@@ -4,3 +4,22 @@
   background-color: #1b1b1d;
   color: white;
 }
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  font-family: sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  background-color: #2b3035;
+  text-align: center;
+  margin-top: auto;
+  padding: 8px;
+}
