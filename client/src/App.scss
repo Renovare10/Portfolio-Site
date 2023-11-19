@@ -5,6 +5,14 @@
   color: white;
 }
 
+a:link {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -22,4 +30,12 @@ footer {
   text-align: center;
   margin-top: auto;
   padding: 8px;
+}
+
+.card-text {
+  text-align: center;
+}
+
+.card-title {
+  text-align: center;
 }
