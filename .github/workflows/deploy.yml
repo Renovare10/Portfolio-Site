@@ -38,11 +38,11 @@ jobs:
       - name: Deploy to S3
         run: |
           aws s3 sync ./dist/ s3://${{ env.S3_BUCKET }}/ \
-          --delete \  
-          --exclude "NWGAEvictionService/*" \
-          --exclude "1010-glow/*" \
-          --exclude "kingslayer-holdout/*" \
-          --cache-control "public, max-age=60, must-revalidate"
+            --delete \
+            --exclude "NWGAEvictionService/*" \
+            --exclude "1010-glow/*" \
+            --exclude "kingslayer-holdout/*" \
+            --cache-control "public, max-age=60, must-revalidate"
 
       - name: Invalidate CloudFront Cache
         if: env.CF_DISTRIBUTION_ID != ''
