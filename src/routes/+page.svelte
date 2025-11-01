@@ -115,6 +115,18 @@
                     <span>AWS S3</span>
                 </div>
             </div>
+            <!-- NEW CARD: NWGA Eviction Service -->
+            <div class="card">
+                <h3>NWGA Eviction Service</h3>
+                <p>A professional eviction management service for Northwest Georgia landlords and property managers.</p>
+                <a href="https://NWGAEvictionService.chadmurchison.com/" class="button">Visit NWGA Eviction Service</a>
+                <div class="tech-stack">
+                    <span>Svelte</span>
+                    <span>SvelteKit</span>
+                    <span>AWS S3</span>
+                    <span>CloudFront</span>
+                </div>
+            </div>
         </div>
     </div>
 </body>
