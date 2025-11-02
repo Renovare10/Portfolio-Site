@@ -2,11 +2,19 @@
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 </script>
 
-<div class="relative min-h-screen bg-[#1e1e1e] p-4 text-[#d4d4d4]">
+<div class="relative min-h-screen bg-[var(--color-bg)] p-4 text-[var(--color-fg)]">
 	<div class="w-full max-w-3xl mx-auto text-center">
-		<h1 class="relative -top-8 mb-8 text-4xl font-medium text-[#007acc] md:text-5xl md:-top-0">
+		<h1 
+			class="
+				relative -top-8 mb-8 text-4xl font-medium 
+				text-[var(--color-gold)] 
+				md:text-5xl md:-top-0 
+				transition-all duration-300 
+			"
+>
 			Projects
 		</h1>
+        
 
 		<div class="grid gap-6">
 			<ProjectCard
