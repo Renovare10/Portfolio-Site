@@ -2,10 +2,10 @@
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 </script>
 
-<div class="flex min-h-screen items-center justify-center bg-[#1e1e1e] p-4 text-[#d4d4d4]">
-	<div class="w-full max-w-3xl text-center">
-		<h1 class="mb-8 text-4xl font-medium text-[#007acc] md:text-5xl">
-			Chad Murchison's Portfolio
+<div class="relative min-h-screen bg-[#1e1e1e] p-4 text-[#d4d4d4]">
+	<div class="w-full max-w-3xl mx-auto text-center">
+		<h1 class="relative -top-8 mb-8 text-4xl font-medium text-[#007acc] md:text-5xl md:-top-0">
+			Projects
 		</h1>
 
 		<div class="grid gap-6">
