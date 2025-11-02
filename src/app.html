@@ -1,11 +1,29 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		%sveltekit.head%
-	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
-	</body>
+<!-- src/app.html -->
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%sveltekit.assets%/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    %sveltekit.head%
+    
+    <!-- VS Code Theme Variables -->
+    <style>
+      :root {
+        --color-bg: #1e1e1e;
+        --color-fg: #d4d4d4;
+        --color-sidebar: #252526;
+        --color-editor: #3c3c3c;
+        --color-accent: #007acc;
+        --color-gold: #c8a848;
+      }
+      html, body, #svelte {
+        background-color: var(--color-bg) !important;
+        color: var(--color-fg);
+      }
+    </style>
+  </head>
+  <body data-sveltekit-prefetch>
+    <div style="display: contents">%sveltekit.body%</div>
+  </body>
 </html>
