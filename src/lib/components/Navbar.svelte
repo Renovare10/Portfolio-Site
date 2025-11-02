@@ -1,6 +1,13 @@
 <!-- src/lib/components/Navbar.svelte -->
 <script lang="ts">
 	import { page } from '$app/stores';
+	import { fly } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
+
+	let mobileOpen = false;
+
+	// Close menu when route changes
+	$: if ($page.url.pathname) mobileOpen = false;
 </script>
 
 <nav class="fixed inset-x-0 top-0 z-50 border-b border-[#3c3c3c] bg-[#1e1e1e]/95 backdrop-blur supports-[backdrop-filter]:bg-[#1e1e1e]/80">
@@ -40,13 +47,65 @@
 
 		<!-- Mobile Menu Button -->
 		<button
-			class="md:hidden text-white hover:text-[#007acc]"
-			aria-label="Open navigation menu"
+			class="md:hidden text-white hover:text-[#007acc] focus:outline-none"
+			aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+			aria-expanded={mobileOpen}
+			on:click={() => (mobileOpen = !mobileOpen)}
 		>
 			<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-				      d="M4 6h16M4 12h16M4 18h16" />
+				{#if mobileOpen}
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M6 18L18 6M6 6l12 12"
+						transition:fly={{ y: -10, duration: 200 }}
+					/>
+				{:else}
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M4 6h16M4 12h16M4 18h16"
+						transition:fly={{ y: 10, duration: 200 }}
+					/>
+				{/if}
 			</svg>
 		</button>
 	</div>
+
+	<!-- Mobile Dropdown -->
+	{#if mobileOpen}
+		<div
+			transition:fly={{ y: -20, duration: 300, easing: quintOut }}
+			class="absolute left-0 right-0 top-full border-b border-[#3c3c3c] bg-[#1e1e1e]/95 backdrop-blur supports-[backdrop-filter]:bg-[#1e1e1e]/80 md:hidden"
+		>
+			<div class="flex flex-col space-y-1 px-4 py-3 text-sm font-medium">
+				<a
+					href="/"
+					class="rounded px-3 py-2 text-left transition hover:bg-[#252526] hover:text-[#007acc]"
+					class:text-[#007acc]={$page.url.pathname === '/'}
+					class:text-white={$page.url.pathname !== '/'}
+				>
+					Portfolio
+				</a>
+				<a
+					href="/about"
+					class="rounded px-3 py-2 text-left transition hover:bg-[#252526] hover:text-[#007acc]"
+					class:text-[#007acc]={$page.url.pathname === '/about'}
+					class:text-white={$page.url.pathname !== '/about'}
+				>
+					About
+				</a>
+				<a
+					href="/contact"
+					class="rounded px-3 py-2 text-left transition hover:bg-[#252526] hover:text-[#007acc]"
+					class:text-[#007acc]={$page.url.pathname === '/contact'}
+					class:text-white={$page.url.pathname !== '/contact'}
+				>
+					Contact
+				</a>
+			</div>
+		</div>
+	{/if}
 </nav>
