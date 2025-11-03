@@ -75,7 +75,7 @@
 					<TimelineStory
 						year="2024"
 						title="Fire Realty"
-						content="Helped to grow a property management company from 6 units to ~30 units in 2 years, delt with evictions, $1,000 water bills, and the joy finding homes quickly."
+						content="Helped to grow a property management company from 6 units to ~30 units in 2 years, dealt with evictions, $1,000 water bills, and the joy finding homes quickly."
 						isBranch={true}
 					/>
 					<TimelineStory
