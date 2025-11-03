@@ -18,20 +18,25 @@
 	.sine-bounce {
 		animation: sine-wave 1.4s ease-in-out infinite;
 	}
+	.text-glow-subtle {
+		text-shadow:
+			0 0 px rgba(255, 255, 255, 0.6),   /* Soft white glow */
+			0 1px 2px rgba(0, 0, 0, 0.4);       /* Tiny dark drop shadow for depth */
+	}
 </style>
 
 <div class="relative h-screen flex flex-col justify-between items-center overflow-hidden">
 	<img
 		src={background}
 		alt="Chad at 607 Broad"
-		class="absolute inset-0 w-full h-full object-cover opacity-20"
+		class="absolute inset-0 w-full h-full object-cover opacity-30"
 	/>
 
 	<!-- Title + Subtitle -->
 	<div class="relative z-10 text-center px-6 pt-[15vh]">
-		<h1 class="text-5xl md:text-7xl font-bold text-[var(--color-gold)] mb-2">
-			Chad Murchison
-		</h1>
+<h1 class="text-5xl md:text-7xl font-bold text-[var(--color-gold)] mb-2 text-glow-subtle">
+	Chad Murchison
+</h1>
 		<p class="text-lg md:text-xl text-[var(--color-fg)]/90 font-light">
 			Explorer • Property Manager • Creator
 		</p>
