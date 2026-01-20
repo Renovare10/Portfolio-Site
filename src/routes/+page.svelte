@@ -32,14 +32,6 @@
 				buttonText="Play 1010 Glow"
 				tech={['Svelte', 'TypeScript', 'Vite', 'PWA', 'AWS S3']}
 			/>
-
-			<ProjectCard
-				title="NWGA Eviction Service"
-				description="A professional eviction management service for Northwest Georgia landlords and property managers."
-				href="https://NWGAEvictionService.chadmurchison.com/"
-				buttonText="Visit NWGA Eviction Service"
-				tech={['Svelte', 'SvelteKit', 'AWS S3', 'CloudFront']}
-			/>
 		</div>
 	</div>
 </div>
