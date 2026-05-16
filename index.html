@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chad Murchison | Projects</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" href="https://chadmurchison.com/favicon.svg" type="image/svg+xml">
+  
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --color-bg: #1e1e1e;
+      --color-fg: #d4d4d4;
+      --color-sidebar: #252526;
+      --color-editor: #3c3c3c;
+      --color-accent: #007acc;
+      --color-gold: #c8a848;
+    }
+    
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-fg);
+      font-family: 'Inter', system_ui, sans-serif;
+    }
+    
+    .navbar {
+      background-color: #252526;
+      border-bottom: 1px solid #3c3c3c;
+    }
+    
+    .project-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      perspective: 1200px;
+    }
+    
+    .card-inner {
+      transition: transform 0.1s ease-out;
+      transform-style: preserve-3d;
+    }
+    
+    .hero {
+      background: linear-gradient(135deg, #c8a848, #007acc, #c8a848);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+<body class="bg-[#1e1e1e] text-[#d4d4d4] min-h-screen">
+
+  <!-- Minimal Navbar -->
+  <nav class="navbar fixed top-0 left-0 right-0 z-50">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center">
+      <!-- Plain 火 symbol - no gold, no border/outline -->
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 bg-[#252526] flex items-center justify-center text-[#d4d4d4] text-3xl leading-none rounded-xl">
+          火
+        </div>
+        <span class="text-2xl font-semibold tracking-tight text-white">Chad Murchison</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="pt-16">
+    <div class="relative min-h-screen bg-[#1e1e1e] px-4 py-16 text-[#d4d4d4]">
+      <div class="max-w-6xl mx-auto">
+        
+        <!-- Header -->
+        <div class="mb-12 text-center">
+          <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-white">Projects</h1>
+          <p class="mx-auto mt-4 max-w-xl text-lg text-[#d4d4d4]">
+            Experiments, tools, and side projects I've built.
+          </p>
+        </div>
+
+        <!-- 1010 Glow Card - Smaller size -->
+        <div class="flex justify-center">
+          <a href="https://chadmurchison.com/1010-glow/" 
+             class="project-card group block w-full max-w-sm">
+            
+            <div id="card" class="card-inner bg-[#252526] border border-[#3c3c3c] rounded-3xl overflow-hidden hover:border-[#c8a848]">
+              
+              <!-- Gradient hero area with mouse-reactive text -->
+              <div id="hero" class="hero relative h-64 flex items-center justify-center overflow-hidden">
+                
+                <!-- Subtle shine overlay that follows mouse -->
+                <div id="shine" 
+                     class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none"
+                     style="transform: skew(20deg);"></div>
+                
+                <!-- Main text -->
+                <div class="text-center relative z-10">
+                  <h2 id="glow-text" 
+                      class="text-6xl md:text-7xl font-bold tracking-[-3px] text-white drop-shadow-xl select-none">
+                    1010 GLOW
+                  </h2>
+                </div>
+              </div>
+
+              <!-- Card footer -->
+              <div class="p-6 text-center">
+                <h3 class="text-2xl font-semibold text-white">1010 Glow</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Mouse-reactive tilt + shine effect
+    const card = document.getElementById('card');
+    const hero = document.getElementById('hero');
+    const shine = document.getElementById('shine');
+    const text = document.getElementById('glow-text');
+
+    function handleMouseMove(e) {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      // Calculate tilt
+      const rotateX = (y / rect.height - 0.5) * -25;
+      const rotateY = (x / rect.width - 0.5) * 25;
+      
+      card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+      
+      // Move shine effect
+      const shineX = (x / rect.width) * 150 - 50;
+      shine.style.backgroundPosition = `${shineX}% 50%`;
+    }
+
+    function resetCard() {
+      card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
+    }
+
+    // Event listeners
+    card.addEventListener('mousemove', handleMouseMove);
+    card.addEventListener('mouseleave', resetCard);
+
+    console.log('%c✅ 1010 Glow static page ready!', 'color:#c8a848; font-size:14px; font-weight:bold');
+  </script>
+</body>
+</html>
