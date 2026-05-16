@@ -15,10 +15,11 @@
 <a
 	href={href}
 	target="_blank"
+	rel="noopener noreferrer"
 	class="group block h-full bg-[#252526] border border-[#3c3c3c] rounded-2xl p-6 transition-all duration-200 hover:border-[#007acc] hover:-translate-y-1 hover:shadow-xl"
 >
 	<div class="flex h-full flex-col">
-		<!-- Header -->
+		<!-- Title + Subtitle -->
 		<div>
 			<h3 class="text-2xl font-semibold text-white group-hover:text-[#007acc] transition-colors">
 				{title}
@@ -30,7 +31,7 @@
 			{/if}
 		</div>
 
-		<!-- Tech Stack -->
+		<!-- Tech Stack Badges -->
 		{#if tech.length > 0}
 			<div class="mt-auto pt-6 flex flex-wrap gap-2">
 				{#each tech as item}
