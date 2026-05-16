@@ -18,10 +18,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6     # ← Updated to v6 (native Node 24)
 
       - name: Configure AWS Credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6   # ← Updated to v6 (native Node 24)
         with:
           role-to-assume: arn:aws:iam::376374282414:role/GitHubActions-Exigency-Deploy
           aws-region: us-east-2
