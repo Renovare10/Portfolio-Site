@@ -37,20 +37,18 @@ jobs:
           role-to-assume: arn:aws:iam::376374282414:role/GitHubActions-Exigency-Deploy
           aws-region: us-east-2
 
-      - name: Deploy to S3 (root only - protects project folders)
+      - name: Deploy to S3 (protects /projects/ folder)
         run: |
           aws s3 sync ./dist/ s3://${{ env.S3_BUCKET }}/ \
             --delete \
-            --exclude "NWGAEvictionService/*" \
-            --exclude "1010-glow/*" \
-            --exclude "kingslayer-holdout/*" \
-            --cache-control "public, max-age=31536000, immutable" \
+            --exclude "projects/*" \
+            --cache-control "public, max-age=31536000, immutable"
 
-      - name: Invalidate CloudFront Cache
+      - name: Invalidate CloudFront
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CF_DISTRIBUTION_ID }} \
             --paths "/*"
 
       - name: Success
-        run: echo "✅ Deployed successfully to https://chadmurchison.com/"
+        run: echo "✅ Deployed to https://chadmurchison.com/"
