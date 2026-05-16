@@ -8,9 +8,12 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     env:
       S3_BUCKET: chadm-portfolio
-      CF_DISTRIBUTION_ID: ${{ vars.CF_DISTRIBUTION_ID }}
+      CF_DISTRIBUTION_ID: E3DGQMN9TWSU05
 
     steps:
       - name: Checkout code
@@ -28,29 +31,27 @@ jobs:
       - name: Build Svelte app
         run: npm run build
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::376374282414:role/GitHubActions-Exigency-Deploy
           aws-region: us-east-2
 
-      - name: Deploy to S3
+      - name: Deploy to S3 (root only - protects project folders)
         run: |
           aws s3 sync ./dist/ s3://${{ env.S3_BUCKET }}/ \
             --delete \
             --exclude "NWGAEvictionService/*" \
             --exclude "1010-glow/*" \
             --exclude "kingslayer-holdout/*" \
-            --cache-control "public, max-age=60, must-revalidate"
+            --cache-control "public, max-age=31536000, immutable" \
+            --acl public-read
 
       - name: Invalidate CloudFront Cache
-        if: env.CF_DISTRIBUTION_ID != ''
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CF_DISTRIBUTION_ID }} \
             --paths "/*"
 
       - name: Success
-        run: |
-          echo "Deployed: https://chadmurchison.com/"
+        run: echo "✅ Deployed successfully to https://chadmurchison.com/"

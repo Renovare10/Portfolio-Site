@@ -23,15 +23,7 @@
 				class:text-[var(--color-gold)]={$page.url.pathname === '/'}
 				class:text-[var(--color-fg)]={$page.url.pathname !== '/'}
 			>
-				Portfolio
-			</a>
-			<a
-				href="/about"
-				class="transition hover:text-[var(--color-gold)]"
-				class:text-[var(--color-gold)]={$page.url.pathname === '/about'}
-				class:text-[var(--color-fg)]={$page.url.pathname !== '/about'}
-			>
-				About
+				Projects
 			</a>
 			<a
 				href="/contact"
@@ -85,15 +77,7 @@
 					class:text-[var(--color-gold)]={$page.url.pathname === '/'}
 					class:text-[var(--color-fg)]={$page.url.pathname !== '/'}
 				>
-					Portfolio
-				</a>
-				<a
-					href="/about"
-					class="rounded px-3 py-2 text-left transition hover:bg-[var(--color-sidebar)]"
-					class:text-[var(--color-gold)]={$page.url.pathname === '/about'}
-					class:text-[var(--color-fg)]={$page.url.pathname !== '/about'}
-				>
-					About
+					Projects
 				</a>
 				<a
 					href="/contact"
