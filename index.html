@@ -1,154 +1,1329 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chad Murchison | Projects</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="icon" href="https://chadmurchison.com/favicon.svg" type="image/svg+xml">
-  
+  <title>Chad Murchison</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
-    :root {
-      --color-bg: #1e1e1e;
-      --color-fg: #d4d4d4;
-      --color-sidebar: #252526;
-      --color-editor: #3c3c3c;
-      --color-accent: #007acc;
-      --color-gold: #c8a848;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    
-    body {
-      background-color: var(--color-bg);
-      color: var(--color-fg);
-      font-family: 'Inter', system_ui, sans-serif;
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: system-ui, -apple-system, sans-serif;
     }
-    
-    .navbar {
-      background-color: #252526;
-      border-bottom: 1px solid #3c3c3c;
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100vh;
+      touch-action: none;
     }
-    
-    .project-card {
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      perspective: 1200px;
+    .instructions {
+      position: fixed;
+      bottom: 48px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #555;
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 10;
+      text-align: center;
     }
-    
-    .card-inner {
-      transition: transform 0.1s ease-out;
-      transform-style: preserve-3d;
+    .instructions.hidden {
+      opacity: 0;
     }
-    
-    .hero {
-      background: linear-gradient(135deg, #c8a848, #007acc, #c8a848);
-      background-size: 400% 400%;
-      animation: gradientShift 15s ease infinite;
+    .controls {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 20;
+      display: flex;
+      gap: 12px;
     }
-    
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+
+    /* === Navbar === */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 80; /* always above subpages so navbar stays usable */
+      background: rgba(10, 10, 10, 0.92);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0 24px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      opacity: 0.15;
+      transition: opacity 0.25s ease;
+      pointer-events: none; /* allow canvas interaction when faded */
+    }
+    #navbar.visible {
+      opacity: 0.98;
+      pointer-events: auto;
+    }
+
+    .nav-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-brand {
+      color: #ddd;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav-brand:hover {
+      color: #fff;
+    }
+    .fire {
+      font-size: 16px;
+      line-height: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+    }
+    .nav-links a {
+      color: #999;
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 0.8px;
+      transition: color 0.2s ease;
+    }
+    .nav-links a:hover {
+      color: #eee;
+    }
+
+    /* === Full-screen Subpages (Projects / Contact) === */
+    .subpage {
+      position: fixed;
+      inset: 0;
+      z-index: 65;
+      background: rgba(18, 16, 12, 0.82);
+      color: #d4c8a8;
+      /* Normal web page layout — content starts higher up, not centered */
+      display: block;
+      font-family: system-ui, -apple-system, sans-serif;
+      padding-top: 72px;   /* sits nicely under the navbar */
+      padding-left: 80px;
+      padding-right: 80px;
+      overflow-y: auto;
+    }
+    .subpage.hidden {
+      display: none;
+    }
+    .subpage-content {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      color: #a38d5f;
+      font-size: 14px;
+      padding: 8px 0;
+      margin-bottom: 40px;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .back-btn:hover {
+      color: #c8a848;
+    }
+    .subpage-title {
+      font-size: 42px;
+      font-weight: 600;
+      margin: 0 0 8px;
+      color: #e8d9b0;
+      letter-spacing: -0.5px;
+    }
+    .subpage-subtitle {
+      font-size: 18px;
+      color: #a38d5f;
+      margin: 0 0 32px;
+      font-weight: 400;
+    }
+    .subpage-body {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #c4b89a;
+      max-width: 480px;
+    }
+    .contact-list {
+      margin-top: 20px;
+    }
+    .contact-row {
+      margin-bottom: 22px;
+    }
+    .contact-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8c7a55;
+      margin-bottom: 4px;
+    }
+    .contact-value {
+      font-size: 17px;
+      color: #d4c8a8;
+      cursor: pointer;
+      transition: color 0.2s ease;
+      user-select: none;
+    }
+    .contact-value:hover {
+      color: #e8d9b0;
+    }
+    .contact-value.revealed {
+      cursor: default;
+      color: #f0e4c8;
+    }
+    .btn {
+      background: rgba(255,255,255,0.06);
+      color: #888;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 18px;
+      font-size: 12px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-radius: 4px;
+      user-select: none;
+    }
+    .btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: #ccc;
+      border-color: rgba(255,255,255,0.25);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .destroy {
+      border-color: #c44;
+      color: #c66;
+    }
+    .destroy:hover {
+      background: rgba(180, 50, 50, 0.2);
+      color: #f88;
+      border-color: #c44;
+    }
+
+    /* Help button (bottom left) */
+    .help-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      width: 28px;
+      height: 28px;
+      background: rgba(255,255,255,0.06);
+      color: #777;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      user-select: none;
+      z-index: 30;
+      transition: all 0.2s ease;
+    }
+    .help-btn:hover {
+      background: rgba(255,255,255,0.12);
+      color: #aaa;
+      border-color: rgba(255,255,255,0.25);
+    }
+
+    /* Help panel */
+    .help-panel {
+      position: fixed;
+      bottom: 60px;
+      left: 24px;
+      background: rgba(20,20,20,0.92);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 12px;
+      color: #aaa;
+      line-height: 1.5;
+      z-index: 40;
+      min-width: 210px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+      display: none;
+      pointer-events: none;
+    }
+    .help-panel.visible {
+      display: block;
+      pointer-events: auto;
+    }
+    .help-panel strong {
+      color: #ccc;
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .help-row {
+      margin: 3px 0;
+    }
+    .help-row .key {
+      display: inline-block;
+      min-width: 78px;
+      color: #999;
+      font-family: ui-monospace, monospace;
+    }
+
+    /* Make the bottom hint even more subtle once the user has seen the help */
+    .instructions {
+      font-size: 11px;
+      color: #444;
     }
   </style>
 </head>
-<body class="bg-[#1e1e1e] text-[#d4d4d4] min-h-screen">
+<body>
+  <!-- Top navigation (fades in on hover near top) -->
+  <nav id="navbar">
+    <div class="nav-content">
+      <a href="#" id="homeLink" class="nav-brand">Chad <span class="fire">火</span></a>
 
-  <!-- Minimal Navbar -->
-  <nav class="navbar fixed top-0 left-0 right-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center">
-      <!-- Plain 火 symbol - no gold, no border/outline -->
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 bg-[#252526] flex items-center justify-center text-[#d4d4d4] text-3xl leading-none rounded-xl">
-          火
-        </div>
-        <span class="text-2xl font-semibold tracking-tight text-white">Chad Murchison</span>
+      <div class="nav-links">
+        <a href="#" id="projectsLink">Projects</a>
+        <a href="#" id="contactLink">Contact</a>
       </div>
     </div>
   </nav>
 
-  <!-- Main Content -->
-  <main class="pt-16">
-    <div class="relative min-h-screen bg-[#1e1e1e] px-4 py-16 text-[#d4d4d4]">
-      <div class="max-w-6xl mx-auto">
-        
-        <!-- Header -->
-        <div class="mb-12 text-center">
-          <h1 class="text-5xl md:text-6xl font-bold tracking-tight text-white">Projects</h1>
-          <p class="mx-auto mt-4 max-w-xl text-lg text-[#d4d4d4]">
-            Experiments, tools, and side projects I've built.
-          </p>
-        </div>
-
-        <!-- 1010 Glow Card - Smaller size -->
-        <div class="flex justify-center">
-          <a href="https://chadmurchison.com/1010-glow/" 
-             class="project-card group block w-full max-w-sm">
-            
-            <div id="card" class="card-inner bg-[#252526] border border-[#3c3c3c] rounded-3xl overflow-hidden hover:border-[#c8a848]">
-              
-              <!-- Gradient hero area with mouse-reactive text -->
-              <div id="hero" class="hero relative h-64 flex items-center justify-center overflow-hidden">
-                
-                <!-- Subtle shine overlay that follows mouse -->
-                <div id="shine" 
-                     class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none"
-                     style="transform: skew(20deg);"></div>
-                
-                <!-- Main text -->
-                <div class="text-center relative z-10">
-                  <h2 id="glow-text" 
-                      class="text-6xl md:text-7xl font-bold tracking-[-3px] text-white drop-shadow-xl select-none">
-                    1010 GLOW
-                  </h2>
-                </div>
-              </div>
-
-              <!-- Card footer -->
-              <div class="p-6 text-center">
-                <h3 class="text-2xl font-semibold text-white">1010 Glow</h3>
-              </div>
-            </div>
-          </a>
-        </div>
-
+  <!-- Full-screen Projects page -->
+  <div id="projects-page" class="subpage hidden">
+    <div class="subpage-content">
+      <button class="back-btn" id="projects-back">← Back to experience</button>
+      <h1 class="subpage-title">Projects</h1>
+      <p class="subpage-subtitle">Under construction!</p>
+      <div class="subpage-body">
+        <p>I'm currently building out several new experiments and tools.</p>
+        <p>Check back soon for updates.</p>
       </div>
     </div>
-  </main>
+  </div>
+
+  <!-- Full-screen Contact page -->
+  <div id="contact-page" class="subpage hidden">
+    <div class="subpage-content">
+      <button class="back-btn" id="contact-back">← Back to experience</button>
+      <h1 class="subpage-title">Contact</h1>
+      <p class="subpage-subtitle">Let's connect.</p>
+
+      <div class="contact-list">
+        <div class="contact-row">
+          <div class="contact-label">Email</div>
+          <div class="contact-value" id="contact-email">Click to reveal</div>
+        </div>
+        <div class="contact-row">
+          <div class="contact-label">Phone</div>
+          <div class="contact-value" id="contact-phone">Click to reveal</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <canvas id="canvas"></canvas>
+  
+  <!-- Minimal persistent hint (fades after interaction) -->
+  <div class="instructions" id="instructions">
+    drag blocks • hold to push or vacuum
+  </div>
+
+  <!-- Question mark help button (bottom left) -->
+  <div class="help-btn" id="helpBtn" title="How to play">?</div>
+
+  <!-- Help panel (revealed on hover or click) -->
+  <div class="help-panel" id="helpPanel">
+    <div><strong>Controls</strong></div>
+    <div class="help-row"><span class="key">Drag</span> move &amp; spin blocks</div>
+    <div class="help-row"><span class="key">Left hold</span> (empty space) → push</div>
+    <div class="help-row"><span class="key">Right hold</span> → vacuum (pull in)</div>
+    <div class="help-row"><span class="key">Space</span> or click to destroy</div>
+    <div class="help-row"><span class="key">R</span> reset</div>
+  </div>
+  
+  <div class="controls">
+    <button class="btn" id="resetBtn">reset</button>
+    <button class="btn destroy" id="destroyBtn">destroy</button>
+  </div>
 
   <script>
-    // Mouse-reactive tilt + shine effect
-    const card = document.getElementById('card');
-    const hero = document.getElementById('hero');
-    const shine = document.getElementById('shine');
-    const text = document.getElementById('glow-text');
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d', { alpha: true });
+    
+    let width = 0;
+    let height = 0;
+    let blocks = [];
+    let grabbedBlock = null;
+    let grabLocalX = 0;
+    let grabLocalY = 0;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+    let mouseVelX = 0;
+    let mouseVelY = 0;
+    let hasInteracted = false;
 
-    function handleMouseMove(e) {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      // Calculate tilt
-      const rotateX = (y / rect.height - 0.5) * -25;
-      const rotateY = (x / rect.width - 0.5) * 25;
-      
-      card.style.transform = `perspective(1200px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      
-      // Move shine effect
-      const shineX = (x / rect.width) * 150 - 50;
-      shine.style.backgroundPosition = `${shineX}% 50%`;
+    // Mouse force field (push / vacuum)
+    let mouseX = 0;
+    let mouseY = 0;
+    let mouseInside = false;
+    let isRightDown = false;
+    let leftButtonDown = false;
+
+    let subpageActive = false;   // when Projects or Contact is open
+
+    const instructions = document.getElementById('instructions');
+    const resetBtn = document.getElementById('resetBtn');
+    const destroyBtn = document.getElementById('destroyBtn');
+
+    const helpBtn = document.getElementById('helpBtn');
+    const helpPanel = document.getElementById('helpPanel');
+
+    const navbar = document.getElementById('navbar');
+    const homeLink = document.getElementById('homeLink');
+    const projectsLink = document.getElementById('projectsLink');
+    const contactLink = document.getElementById('contactLink');
+
+    // Block font definition (7 rows high, chunky style)
+    // 1 = block, 0 = empty
+    const FONT = {
+      'C': [
+        ' 1111 ',
+        '11    ',
+        '11    ',
+        '11    ',
+        '11    ',
+        '11    ',
+        ' 1111 '
+      ],
+      'H': [
+        '11  11',
+        '11  11',
+        '11  11',
+        '111111',
+        '11  11',
+        '11  11',
+        '11  11'
+      ],
+      'A': [
+        ' 111  ',
+        '11 11 ',
+        '11 11 ',
+        '111111',
+        '11 11 ',
+        '11 11 ',
+        '11 11 '
+      ],
+      'D': [
+        '1111  ',
+        '11 11 ',
+        '11 11 ',
+        '11 11 ',
+        '11 11 ',
+        '11 11 ',
+        '1111  '
+      ],
+      'M': [
+        '11  11',
+        '111 111',
+        '1111111',
+        '11 1 11',
+        '11   11',
+        '11   11',
+        '11   11'
+      ],
+      'U': [
+        '11  11',
+        '11  11',
+        '11  11',
+        '11  11',
+        '11  11',
+        '11  11',
+        ' 1111 '
+      ],
+      'R': [
+        '1111  ',
+        '11 11 ',
+        '11 11 ',
+        '1111  ',
+        '11 11 ',
+        '11 11 ',
+        '11  11'
+      ],
+      'I': [
+        '1111',
+        ' 11 ',
+        ' 11 ',
+        ' 11 ',
+        ' 11 ',
+        ' 11 ',
+        '1111'
+      ],
+      'S': [
+        ' 1111',
+        '11   ',
+        '11   ',
+        ' 111 ',
+        '   11',
+        '   11',
+        '1111 '
+      ],
+      'O': [
+        ' 111  ',
+        '11 11 ',
+        '11 11 ',
+        '11 11 ',
+        '11 11 ',
+        '11 11 ',
+        ' 111  '
+      ],
+      'N': [
+        '11   11',
+        '111  11',
+        '1111 11',
+        '11 1111',
+        '11  111',
+        '11   11',
+        '11   11'
+      ],
+      ' ': [
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+        ' ',
+        ' '
+      ]
+    };
+
+    function getLetterWidth(letter) {
+      if (!FONT[letter]) return 0;
+      return FONT[letter][0].length;
     }
 
-    function resetCard() {
-      card.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
+    function buildTextBlocks(textLines, blockSize, gap, centerX, centerY) {
+      const allBlocks = [];
+      const lineHeight = 7;
+      const totalHeight = textLines.length * lineHeight * (blockSize + gap) - gap;
+      let startY = centerY - totalHeight / 2;
+
+      textLines.forEach((line, lineIndex) => {
+        // Calculate total width of this line
+        let lineWidth = 0;
+        for (let i = 0; i < line.length; i++) {
+          lineWidth += getLetterWidth(line[i]);
+        }
+        lineWidth += (line.length - 1) * 2; // space between letters
+
+        let startX = centerX - (lineWidth * (blockSize + gap)) / 2;
+        let cursorX = startX;
+
+        for (let i = 0; i < line.length; i++) {
+          const letter = line[i].toUpperCase();
+          if (!FONT[letter]) continue;
+
+          const letterData = FONT[letter];
+          const letterW = getLetterWidth(letter);
+
+          for (let row = 0; row < letterData.length; row++) {
+            const rowStr = letterData[row];
+            for (let col = 0; col < rowStr.length; col++) {
+              if (rowStr[col] === '1') {
+                const x = cursorX + col * (blockSize + gap);
+                const y = startY + lineIndex * (lineHeight * (blockSize + gap)) + row * (blockSize + gap);
+                
+                allBlocks.push({
+                  x: x,
+                  y: y,
+                  vx: 0,
+                  vy: 0,
+                  angle: 0,
+                  omega: 0,
+                  size: blockSize,
+                  // slight natural gray variation
+                  color: Math.random() > 0.7 ? '#9a9a9a' : (Math.random() > 0.4 ? '#888888' : '#777777')
+                });
+              }
+            }
+          }
+          cursorX += letterW * (blockSize + gap) + Math.floor(2.4 * (blockSize + gap)); // generous letter spacing for big blocks
+        }
+      });
+
+      return allBlocks;
     }
 
-    // Event listeners
-    card.addEventListener('mousemove', handleMouseMove);
-    card.addEventListener('mouseleave', resetCard);
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width;
+      canvas.height = height;
 
-    console.log('%c✅ 1010 Glow static page ready!', 'color:#c8a848; font-size:14px; font-weight:bold');
+      // Rebuild blocks on resize so they stay nicely centered
+      initBlocks();
+    }
+
+    function initBlocks() {
+      blocks = [];
+
+      // Start with a reasonable size; we'll auto-scale to guarantee the full name fits
+      let blockSize = Math.floor(Math.min(width, height) / 48);
+      blockSize = Math.max(7, Math.min(16, blockSize));
+      if (width > 2400) blockSize = Math.floor(blockSize * 0.9);
+
+      const gap = Math.floor(blockSize * 0.28);
+
+      // Two lines
+      const lines = ['CHAD', 'MURCHISON'];
+      
+      const centerX = width / 2;
+      const centerY = height / 2;
+
+      blocks = buildTextBlocks(lines, blockSize, gap, centerX, centerY);
+
+      // Automatically scale & center so the entire text is always fully visible with comfortable margins
+      if (blocks.length > 0) {
+        let minX = Infinity, maxX = -Infinity;
+        let minY = Infinity, maxY = -Infinity;
+
+        for (let i = 0; i < blocks.length; i++) {
+          const b = blocks[i];
+          const h = b.size / 2;
+          if (b.x - h < minX) minX = b.x - h;
+          if (b.x + h > maxX) maxX = b.x + h;
+          if (b.y - h < minY) minY = b.y - h;
+          if (b.y + h > maxY) maxY = b.y + h;
+        }
+
+        const textW = maxX - minX;
+        const textH = maxY - minY;
+
+        const margin = Math.min(width, height) * 0.09;
+        const targetW = width - margin * 2;
+        const targetH = height - margin * 2;
+
+        let scale = Math.min(targetW / textW, targetH / textH);
+        // Allow slight upscale on tiny viewports so text doesn't become microscopic
+        if (scale < 1 && Math.min(width, height) < 700) {
+          scale = Math.max(scale, 0.72);
+        }
+
+        if (scale < 0.985 || scale > 1.02) {
+          const cx = (minX + maxX) / 2;
+          const cy = (minY + maxY) / 2;
+
+          for (let i = 0; i < blocks.length; i++) {
+            const b = blocks[i];
+            b.x = (b.x - cx) * scale + width / 2;
+            b.y = (b.y - cy) * scale + height / 2;
+            b.size = Math.max(3, b.size * scale);
+          }
+        }
+      }
+    }
+
+    function updatePhysics() {
+      // When a subpage (Projects/Contact) is open, use zero friction so blocks float forever
+      const linearFriction = subpageActive ? 1.0 : 0.998;
+      const angularFriction = subpageActive ? 1.0 : 0.985;
+      const bounce = 0.78;
+
+      for (let i = 0; i < blocks.length; i++) {
+        const b = blocks[i];
+        if (b === grabbedBlock) continue;
+
+        // Integrate linear + angular
+        b.x += b.vx;
+        b.y += b.vy;
+        b.angle += b.omega;
+
+        // Damping
+        b.vx *= linearFriction;
+        b.vy *= linearFriction;
+        b.omega *= angularFriction;
+
+        // Wall collisions with spin transfer
+        const half = b.size / 2;
+        const spinTransfer = 0.022;
+
+        if (b.x < half) {
+          b.x = half;
+          const incoming = b.vx;
+          b.vx = Math.abs(incoming) * bounce;
+          b.omega += b.vy * spinTransfer;
+        }
+        if (b.x > width - half) {
+          b.x = width - half;
+          const incoming = b.vx;
+          b.vx = -Math.abs(incoming) * bounce;
+          b.omega -= b.vy * spinTransfer;
+        }
+        if (b.y < half) {
+          b.y = half;
+          const incoming = b.vy;
+          b.vy = Math.abs(incoming) * bounce;
+          b.omega -= b.vx * spinTransfer;
+        }
+        if (b.y > height - half) {
+          b.y = height - half;
+          const incoming = b.vy;
+          b.vy = -Math.abs(incoming) * bounce * 0.9;
+          b.omega += b.vx * spinTransfer;
+        }
+
+        // Very light settling only when nearly motionless (preserve the floating feel)
+        const speed = Math.abs(b.vx) + Math.abs(b.vy);
+        if (speed < 0.35) {
+          b.vx *= 0.94;
+          b.vy *= 0.94;
+          b.omega *= 0.90;
+        }
+      }
+    }
+
+    function resolveCollisions() {
+      const restitution = 0.58;
+      const contactFriction = 0.82;
+
+      for (let i = 0; i < blocks.length; i++) {
+        const a = blocks[i];
+        for (let j = i + 1; j < blocks.length; j++) {
+          const b = blocks[j];
+
+          const dx = b.x - a.x;
+          const dy = b.y - a.y;
+          const distSq = dx * dx + dy * dy;
+          const minDist = (a.size + b.size) * 0.475;
+          const minDistSq = minDist * minDist;
+
+          if (distSq < minDistSq && distSq > 0.01) {
+            const dist = Math.sqrt(distSq);
+            const nx = dx / dist;
+            const ny = dy / dist;
+            const overlap = minDist - dist;
+
+            // Positional correction — only push free blocks (grabbed block is mouse-controlled)
+            const corr = overlap * 0.48;
+            if (a !== grabbedBlock) {
+              a.x -= nx * corr;
+              a.y -= ny * corr;
+            }
+            if (b !== grabbedBlock) {
+              b.x += nx * corr;
+              b.y += ny * corr;
+            }
+
+            // Relative velocity
+            const rvx = b.vx - a.vx;
+            const rvy = b.vy - a.vy;
+            const velNormal = rvx * nx + rvy * ny;
+
+            if (velNormal > 0) continue;
+
+            // Normal impulse — only affect free blocks
+            const imp = -(1 + restitution) * velNormal * 0.5;
+            if (a !== grabbedBlock) {
+              a.vx -= nx * imp;
+              a.vy -= ny * imp;
+            }
+            if (b !== grabbedBlock) {
+              b.vx += nx * imp;
+              b.vy += ny * imp;
+            }
+
+            // Torque — only on free blocks
+            const torque = (dx * ny - dy * nx) * imp * 0.032;
+            if (a !== grabbedBlock) a.omega += torque;
+            if (b !== grabbedBlock) b.omega -= torque;
+
+            // Tangential friction for spin transfer — only on free blocks
+            const tx = -ny;
+            const ty = nx;
+            const tv = rvx * tx + rvy * ty;
+            const tImp = -tv * 0.48 * contactFriction;
+
+            if (a !== grabbedBlock) {
+              a.vx -= tx * tImp;
+              a.vy -= ty * tImp;
+            }
+            if (b !== grabbedBlock) {
+              b.vx += tx * tImp;
+              b.vy += ty * tImp;
+            }
+
+            if (a !== grabbedBlock) a.omega += tImp * 0.055;
+            if (b !== grabbedBlock) b.omega -= tImp * 0.055;
+          }
+        }
+      }
+    }
+
+    function applyMouseForceField() {
+      const forceActive = (leftButtonDown || isRightDown) && !grabbedBlock;
+      if (!mouseInside || !forceActive) return;
+
+      // When a subpage is open, make the force field extremely weak so blocks mostly just float
+      const forceMultiplier = subpageActive ? 0.08 : 1.0;
+
+      const radius = Math.max(90, Math.min(165, Math.min(width, height) * 0.11));
+      const maxForce = 0.85 * forceMultiplier;   // greatly reduced on subpages
+      const isVacuum = isRightDown;
+
+      for (let i = 0; i < blocks.length; i++) {
+        const b = blocks[i];
+        if (b === grabbedBlock) continue;
+
+        const dx = b.x - mouseX;
+        const dy = b.y - mouseY;
+        const distSq = dx * dx + dy * dy;
+        const dist = Math.sqrt(distSq) || 1;
+
+        if (dist < radius) {
+          const falloff = 1 - (dist / radius);
+          // Stronger near the center, nice soft falloff
+          const force = falloff * falloff * maxForce * (0.7 + Math.random() * 0.15);
+
+          const nx = dx / dist;
+          const ny = dy / dist;
+
+          if (isVacuum) {
+            // Pull toward mouse (vacuum)
+            b.vx -= nx * force;
+            b.vy -= ny * force;
+          } else {
+            // Push away from mouse (repel)
+            b.vx += nx * force;
+            b.vy += ny * force;
+          }
+        }
+      }
+    }
+
+    function draw() {
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, width, height);
+
+      // Subtle grid — hidden on subpages so it's not too busy
+      if (!subpageActive) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.025)';
+        ctx.lineWidth = 1;
+        const grid = 48;
+        for (let x = grid; x < width; x += grid) {
+          ctx.beginPath();
+          ctx.moveTo(x, 0);
+          ctx.lineTo(x, height);
+          ctx.stroke();
+        }
+        for (let y = grid; y < height; y += grid) {
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(width, y);
+          ctx.stroke();
+        }
+      }
+
+      // Draw blocks (rotated)
+      ctx.shadowBlur = 0;
+
+      // When a full-screen subpage is open, draw blocks very faintly as background
+      const blockAlpha = subpageActive ? 0.07 : 1.0;
+      ctx.globalAlpha = blockAlpha;
+
+      for (let i = 0; i < blocks.length; i++) {
+        const b = blocks[i];
+        const isGrabbed = b === grabbedBlock;
+
+        const speed = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+        if (isGrabbed) {
+          ctx.fillStyle = '#d8d8d8';
+          ctx.shadowColor = 'rgba(220,220,220,0.55)';
+          ctx.shadowBlur = 11;
+        } else if (speed > 3.8) {
+          ctx.fillStyle = b.color;
+          ctx.shadowColor = 'rgba(180,180,180,0.26)';
+          ctx.shadowBlur = Math.min(6, speed * 0.45);
+        } else {
+          ctx.fillStyle = b.color;
+          ctx.shadowBlur = 0;
+        }
+
+        const half = b.size / 2;
+        const r = Math.max(1, Math.floor(b.size * 0.20));
+
+        ctx.save();
+        ctx.translate(b.x, b.y);
+        ctx.rotate(b.angle);
+
+        if (ctx.roundRect) {
+          ctx.beginPath();
+          ctx.roundRect(-half, -half, b.size, b.size, r);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-half, -half, b.size, b.size);
+        }
+        ctx.restore();
+      }
+
+      ctx.globalAlpha = 1.0;
+      ctx.shadowBlur = 0;
+
+      // Draw the mouse force field circle (only when actively holding a button on empty space)
+      const forceActive = (leftButtonDown || isRightDown) && !grabbedBlock;
+      if (mouseInside && forceActive) {
+        const radius = Math.max(90, Math.min(165, Math.min(width, height) * 0.11));
+
+        ctx.save();
+        ctx.strokeStyle = isRightDown 
+          ? 'rgba(220, 160, 160, 0.55)'   // slightly warmer/redder for vacuum
+          : 'rgba(200, 200, 200, 0.38)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.arc(mouseX, mouseY, radius, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Very subtle inner ring for extra visibility
+        ctx.strokeStyle = isRightDown 
+          ? 'rgba(240, 180, 180, 0.22)' 
+          : 'rgba(210, 210, 210, 0.18)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(mouseX, mouseY, radius * 0.55, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    function findBlockNear(x, y) {
+      // Even smaller grab radius — prioritize force field interaction over grabbing blocks
+      const radius = Math.max(14, Math.min(28, blocks.length > 0 ? blocks[0].size * 2.6 : 18));
+      let closest = null;
+      let minDist = Infinity;
+
+      for (let i = 0; i < blocks.length; i++) {
+        const b = blocks[i];
+        const dx = b.x - x;
+        const dy = b.y - y;
+        const dist = dx * dx + dy * dy;
+
+        if (dist < radius * radius && dist < minDist) {
+          minDist = dist;
+          closest = b;
+        }
+      }
+      return closest;
+    }
+
+    function getPointerPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      return {
+        x: (e.clientX - rect.left) * (width / rect.width),
+        y: (e.clientY - rect.top) * (height / rect.height)
+      };
+    }
+
+    function handlePointerDown(e) {
+      if (!hasInteracted) {
+        hasInteracted = true;
+        instructions.classList.add('hidden');
+      }
+
+      const pos = getPointerPos(e);
+      lastMouseX = pos.x;
+      lastMouseY = pos.y;
+
+      // Track left button for force field activation
+      if (e.button === 0) {
+        leftButtonDown = true;
+      }
+
+      // Right click → vacuum mode (don't grab blocks)
+      if (e.button === 2) {
+        isRightDown = true;
+        mouseX = pos.x;
+        mouseY = pos.y;
+        return;
+      }
+
+      // Left click → try to grab a block
+      const block = findBlockNear(pos.x, pos.y);
+      if (block) {
+        grabbedBlock = block;
+        block.vx = 0;
+        block.vy = 0;
+        block.omega *= 0.3;
+
+        const dx = pos.x - block.x;
+        const dy = pos.y - block.y;
+        const ca = Math.cos(-block.angle);
+        const sa = Math.sin(-block.angle);
+        grabLocalX = dx * ca - dy * sa;
+        grabLocalY = dx * sa + dy * ca;
+      }
+    }
+
+    function handlePointerMove(e) {
+      const pos = getPointerPos(e);
+      
+      mouseVelX = pos.x - lastMouseX;
+      mouseVelY = pos.y - lastMouseY;
+      
+      lastMouseX = pos.x;
+      lastMouseY = pos.y;
+
+      // Always track current mouse for the force field
+      mouseX = pos.x;
+      mouseY = pos.y;
+      mouseInside = true;
+
+      if (grabbedBlock) {
+        const b = grabbedBlock;
+
+        // Desired center position from the recorded local grab point + current rotation
+        const ca = Math.cos(b.angle);
+        const sa = Math.sin(b.angle);
+        const worldOffsetX = grabLocalX * ca - grabLocalY * sa;
+        const worldOffsetY = grabLocalX * sa + grabLocalY * ca;
+
+        const targetX = pos.x - worldOffsetX;
+        const targetY = pos.y - worldOffsetY;
+
+        // Blend toward target (feels physical) + add some mouse velocity
+        const blend = 0.72;
+        b.x = b.x * (1 - blend) + targetX * blend;
+        b.y = b.y * (1 - blend) + targetY * blend;
+
+        b.vx = (targetX - b.x) * 0.9 + mouseVelX * 0.55;
+        b.vy = (targetY - b.y) * 0.9 + mouseVelY * 0.55;
+
+        // Torque from off-center drag (the key "rotate while dragging" feel)
+        const toMouseX = pos.x - b.x;
+        const toMouseY = pos.y - b.y;
+        const tangential = (toMouseX * mouseVelY - toMouseY * mouseVelX) * 0.018;
+        b.omega = b.omega * 0.35 + tangential;
+      }
+    }
+
+    function handlePointerUp(e) {
+      if (grabbedBlock) {
+        grabbedBlock.vx = mouseVelX * 1.35;
+        grabbedBlock.vy = mouseVelY * 1.35;
+        grabbedBlock = null;
+      } else if (e && e.clientX != null) {
+        // Left click on empty space no longer explodes (mouse force field handles interaction)
+        // Only Shift + left click on empty does a small manual blast (optional power move)
+        if (!isRightDown && e.shiftKey) {
+          const pos = getPointerPos(e);
+          destroyEverything(22, pos.x, pos.y);
+        }
+      }
+
+      if (e && e.button === 0) {
+        leftButtonDown = false;
+      }
+      if (e && e.button === 2) {
+        isRightDown = false;
+      }
+    }
+
+    function destroyEverything(strength = 18, originX = null, originY = null) {
+      const cx = originX !== null ? originX : width / 2;
+      const cy = originY !== null ? originY : height / 2;
+
+      for (let i = 0; i < blocks.length; i++) {
+        const b = blocks[i];
+        const dx = b.x - cx;
+        const dy = b.y - cy;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+        
+        // Strong radial explosion + randomness (tuned for big blocks)
+        const force = strength * (0.65 + Math.random() * 0.95);
+        b.vx += (dx / dist) * force + (Math.random() - 0.5) * 18;
+        b.vy += (dy / dist) * force + (Math.random() - 0.5) * 18 - 2;
+        
+        // Extra chaotic kick on some blocks
+        if (Math.random() < 0.35) {
+          b.vx += (Math.random() - 0.5) * 26;
+          b.vy += (Math.random() - 0.5) * 26;
+        }
+      }
+    }
+
+    function resetBlocks() {
+      // Rebuild in original formation
+      initBlocks();
+    }
+
+    function loop() {
+      updatePhysics();
+      applyMouseForceField();
+      resolveCollisions();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    function setupEvents() {
+      // Mouse
+      canvas.addEventListener('mousedown', handlePointerDown);
+      window.addEventListener('mousemove', handlePointerMove);
+      window.addEventListener('mouseup', handlePointerUp);
+
+      // Prevent browser context menu on right click
+      canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+      // Track when mouse leaves the canvas area
+      canvas.addEventListener('mouseleave', () => {
+        mouseInside = false;
+      });
+      window.addEventListener('mouseleave', () => {
+        mouseInside = false;
+        isRightDown = false;
+        leftButtonDown = false;
+      });
+
+      // Touch
+      canvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        handlePointerDown(e.touches[0]);
+      }, { passive: false });
+
+      canvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        handlePointerMove(e.touches[0]);
+      }, { passive: false });
+
+      canvas.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        handlePointerUp(e.changedTouches ? e.changedTouches[0] : null);
+      });
+
+      // Buttons
+      destroyBtn.addEventListener('click', (e) => {
+        const strength = e.shiftKey ? 38 : 25;
+        destroyEverything(strength);
+      });
+
+      resetBtn.addEventListener('click', () => {
+        resetBlocks();
+      });
+
+      // Keyboard
+      window.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key.toLowerCase() === 'd') {
+          e.preventDefault();
+          const strength = e.shiftKey ? 38 : 24;
+          destroyEverything(strength);
+        }
+        if (e.key.toLowerCase() === 'r') {
+          resetBlocks();
+        }
+      });
+
+      // Window resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resize, 120);
+      });
+
+      // Hide instructions on any click/tap
+      canvas.addEventListener('click', () => {
+        if (!hasInteracted) {
+          hasInteracted = true;
+          instructions.classList.add('hidden');
+        }
+      });
+
+      // Help button (hover + click toggle)
+      if (helpBtn && helpPanel) {
+        let helpVisible = false;
+
+        const showHelp = () => {
+          helpPanel.classList.add('visible');
+          helpVisible = true;
+        };
+        const hideHelp = () => {
+          helpPanel.classList.remove('visible');
+          helpVisible = false;
+        };
+
+        // Hover (desktop)
+        helpBtn.addEventListener('mouseenter', showHelp);
+        helpBtn.addEventListener('mouseleave', () => {
+          if (!helpVisible) hideHelp(); // only hide if not toggled open
+        });
+
+        // Click / tap to toggle (works on mobile too)
+        helpBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (helpVisible) {
+            hideHelp();
+          } else {
+            showHelp();
+          }
+        });
+
+        // Click outside to close
+        document.addEventListener('click', (e) => {
+          if (helpVisible && !helpPanel.contains(e.target) && e.target !== helpBtn) {
+            hideHelp();
+          }
+        });
+      }
+
+      /* === Navbar visibility (show when mouse near top) === */
+      let navbarVisible = false;
+
+      const showNavbar = () => {
+        if (!navbarVisible) {
+          navbar.classList.add('visible');
+          navbarVisible = true;
+        }
+      };
+
+      const hideNavbar = () => {
+        if (navbarVisible) {
+          navbar.classList.remove('visible');
+          navbarVisible = false;
+        }
+      };
+
+      // Show navbar when mouse is near the top of the screen
+      window.addEventListener('mousemove', (e) => {
+        if (e.clientY < 70) {
+          showNavbar();
+        } else if (!navbar.matches(':hover')) {
+          hideNavbar();
+        }
+      });
+
+      // Keep it visible while hovering the navbar itself
+      navbar.addEventListener('mouseenter', showNavbar);
+      navbar.addEventListener('mouseleave', hideNavbar);
+
+      /* === Navbar actions === */
+      if (homeLink) {
+        homeLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          resetBlocks();
+          hideOverlay();
+        });
+      }
+
+      if (projectsLink) {
+        projectsLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          openSubpage('projects');
+        });
+      }
+
+      if (contactLink) {
+        contactLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          openSubpage('contact');
+        });
+      }
+
+      // Back buttons for full-screen subpages
+      const projectsBack = document.getElementById('projects-back');
+      const contactBack = document.getElementById('contact-back');
+
+      if (projectsBack) projectsBack.addEventListener('click', () => closeSubpage());
+      if (contactBack) contactBack.addEventListener('click', () => closeSubpage());
+
+      // Contact reveal handlers (set when contact page opens)
+      function setupContactReveals() {
+        const emailEl = document.getElementById('contact-email');
+        const phoneEl = document.getElementById('contact-phone');
+
+        if (emailEl) {
+          emailEl.onclick = () => {
+            emailEl.textContent = 'chad@firerealty.net';
+            emailEl.classList.add('revealed');
+          };
+        }
+        if (phoneEl) {
+          phoneEl.onclick = () => {
+            phoneEl.textContent = '706-844-5393';
+            phoneEl.classList.add('revealed');
+          };
+        }
+      }
+
+      function openSubpage(which) {
+        subpageActive = true;
+
+        // Keep navbar fully visible on subpages (user can use it to navigate)
+        if (navbar) navbar.style.opacity = '0.98';
+        if (instructions) instructions.style.opacity = '0.15';
+        if (helpBtn) helpBtn.style.opacity = '0.15';
+
+        if (which === 'projects') {
+          document.getElementById('projects-page').classList.remove('hidden');
+          document.getElementById('contact-page').classList.add('hidden');
+        } else if (which === 'contact') {
+          document.getElementById('projects-page').classList.add('hidden');
+          const contactPage = document.getElementById('contact-page');
+          contactPage.classList.remove('hidden');
+          // Reset reveals each time
+          const email = document.getElementById('contact-email');
+          const phone = document.getElementById('contact-phone');
+          if (email) { email.textContent = 'Click to reveal'; email.classList.remove('revealed'); }
+          if (phone) { phone.textContent = 'Click to reveal'; phone.classList.remove('revealed'); }
+          setupContactReveals();
+        }
+      }
+
+      function closeSubpage() {
+        subpageActive = false;
+        document.getElementById('projects-page').classList.add('hidden');
+        document.getElementById('contact-page').classList.add('hidden');
+
+        // Restore normal UI
+        if (navbar) navbar.style.opacity = '';
+        if (instructions) instructions.style.opacity = '';
+        if (helpBtn) helpBtn.style.opacity = '';
+      }
+    }
+
+    function init() {
+      resize();
+      setupEvents();
+      loop();
+
+      // Gentle hint after a few seconds if no interaction
+      setTimeout(() => {
+        if (!hasInteracted && instructions) {
+          instructions.style.opacity = '0.6';
+        }
+      }, 4200);
+
+      console.log('%c[Portfolio] CHAD MURCHISON block canvas ready. Drag to play.', 'color:#555');
+    }
+
+    init();
   </script>
 </body>
 </html>
