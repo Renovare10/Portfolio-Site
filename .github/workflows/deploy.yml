@@ -1,8 +1,10 @@
-name: Deploy Main Portfolio to S3
+name: Deploy Portfolio to S3
 
 on:
   push:
     branches: [ main ]
+    paths:
+      - 'index.html'          # Only deploy when the actual site changes
   workflow_dispatch:
 
 jobs:
@@ -11,6 +13,10 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    concurrency:
+      group: deploy-portfolio
+      cancel-in-progress: true
+
     env:
       S3_BUCKET: chadm-portfolio
       CF_DISTRIBUTION_ID: E3DGQMN9TWSU05
@@ -25,16 +31,17 @@ jobs:
           role-to-assume: arn:aws:iam::376374282414:role/GitHubActions-Exigency-Deploy
           aws-region: us-east-2
 
-      - name: Upload index.html to S3
+      - name: Deploy index.html to S3
         run: |
           aws s3 cp index.html s3://${{ env.S3_BUCKET }}/index.html \
-            --cache-control "public, max-age=31536000, immutable"
+            --cache-control "public, max-age=31536000, immutable" \
+            --content-type "text/html; charset=utf-8"
 
-      - name: Invalidate CloudFront
+      - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CF_DISTRIBUTION_ID }} \
-            --paths "/*"
+            --paths "/index.html" "/"
 
-      - name: Success
-        run: echo "✅ Deployed to https://chadmurchison.com/"
+      - name: Deployed
+        run: echo "✅ Deployed https://chadmurchison.com/ (only index.html)"
