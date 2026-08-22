@@ -168,6 +168,56 @@
       color: #c4b89a;
       max-width: 480px;
     }
+    .project-card {
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      max-width: 640px;
+      margin: 8px 0 48px;
+    }
+    .project-card h2 {
+      font-size: clamp(1.7rem, 5vw, 2.35rem);
+      font-weight: 600;
+      color: #e8d9b0;
+      margin: 0 0 16px;
+      letter-spacing: -0.3px;
+      text-align: left;
+    }
+    .project-card img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      border: 1px solid rgba(212, 200, 168, 0.2);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.4);
+      background: rgba(10, 8, 6, 0.35);
+    }
+    .project-card p {
+      margin: 16px 0 0;
+      font-size: 16px;
+      line-height: 1.65;
+      color: #c4b89a;
+      text-align: left;
+    }
+    .project-card:hover h2 {
+      color: #f0e4c8;
+    }
+    .project-card:hover img {
+      border-color: rgba(200, 168, 72, 0.5);
+    }
+    @media (max-width: 700px) {
+      .subpage {
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 64px;
+      }
+      .subpage-content {
+        max-width: 100%;
+      }
+      .project-card {
+        max-width: 100%;
+      }
+    }
     .contact-list {
       margin-top: 20px;
     }
@@ -316,11 +366,21 @@
     <div class="subpage-content">
       <button class="back-btn" id="projects-back">← Back</button>
       <h1 class="subpage-title">Projects</h1>
-      <p class="subpage-subtitle">Under construction!</p>
-      <div class="subpage-body">
-        <p>I'm currently building out several new experiments and tools.</p>
-        <p>Check back soon for updates.</p>
-      </div>
+      <a
+        class="project-card"
+        href="https://chainly.chadmurchison.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <h2>Chainly</h2>
+        <img
+          src="/assets/chainly-screenshot.png"
+          alt="Chainly home: Play, Daily, and Speed"
+          width="878"
+          height="766"
+        />
+        <p>Connect popular words together in a chain. Solve the daily puzzle for rewards!</p>
+      </a>
     </div>
   </div>
 
