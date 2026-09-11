@@ -38,15 +38,12 @@ jobs:
           aws s3 cp index.html s3://${{ env.S3_BUCKET }}/index.html \
             --cache-control "public, max-age=60, must-revalidate" \
             --content-type "text/html; charset=utf-8"
-          aws s3 cp assets/chainly-screenshot.png s3://${{ env.S3_BUCKET }}/assets/chainly-screenshot.png \
-            --cache-control "public, max-age=86400" \
-            --content-type "image/png"
 
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CF_DISTRIBUTION_ID }} \
-            --paths "/index.html" "/" "/assets/chainly-screenshot.png"
+            --paths "/index.html" "/"
 
       - name: Deployed
-        run: echo "✅ Deployed https://chadmurchison.com/ (index.html + Chainly screenshot only)"
+        run: echo "✅ Deployed https://chadmurchison.com/"
