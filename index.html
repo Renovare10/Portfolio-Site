@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Chad Murchison</title>
   <style>
     * {
@@ -69,6 +69,51 @@
     #navbar.visible {
       opacity: 0.98;
       pointer-events: auto;
+    }
+
+    .nav-links a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    /* Phones have no hover — keep the bar tappable */
+    @media (hover: none), (pointer: coarse), (max-width: 700px) {
+      #navbar {
+        opacity: 0.98;
+        pointer-events: auto;
+        height: calc(52px + env(safe-area-inset-top, 0px));
+        padding: env(safe-area-inset-top, 0px) max(16px, env(safe-area-inset-right, 0px)) 0 max(16px, env(safe-area-inset-left, 0px));
+      }
+      .nav-links {
+        gap: 4px;
+      }
+      .nav-links a {
+        font-size: 14px;
+        padding: 10px 12px;
+      }
+      .controls {
+        bottom: max(16px, env(safe-area-inset-bottom, 0px));
+        right: 16px;
+        gap: 8px;
+      }
+      .btn {
+        padding: 12px 14px;
+      }
+      .help-btn {
+        bottom: max(16px, env(safe-area-inset-bottom, 0px));
+        left: 16px;
+      }
+      .instructions {
+        bottom: 88px;
+        left: 0;
+        right: 0;
+        width: 100%;
+        transform: none;
+        padding: 0 16px;
+        letter-spacing: 1.5px;
+        font-size: 10px;
+      }
     }
 
     .nav-content {
@@ -265,13 +310,23 @@
       .subpage {
         padding-left: 20px;
         padding-right: 20px;
-        padding-top: 64px;
+        padding-top: calc(64px + env(safe-area-inset-top, 0px));
       }
       .subpage-content {
         max-width: 100%;
       }
       .project-card {
         max-width: 100%;
+      }
+      .nav-links a {
+        font-size: 14px;
+        padding: 10px 12px;
+        min-height: 44px;
+        display: inline-flex;
+        align-items: center;
+      }
+      .subpage-title {
+        font-size: 32px;
       }
     }
     .contact-list {
@@ -1308,8 +1363,10 @@
         });
       }
 
-      /* === Navbar visibility (show when mouse near top) === */
+      /* === Navbar visibility (desktop: mouse near top; phone: always on) === */
       let navbarVisible = false;
+      const navAlwaysOn = () =>
+        window.matchMedia('(hover: none), (pointer: coarse), (max-width: 700px)').matches;
 
       const showNavbar = () => {
         if (!navbarVisible) {
@@ -1319,13 +1376,19 @@
       };
 
       const hideNavbar = () => {
+        if (navAlwaysOn()) return;
+        if (subpageActive) return;
         if (navbarVisible) {
           navbar.classList.remove('visible');
           navbarVisible = false;
         }
       };
 
-      // Show navbar when mouse is near the top of the screen
+      if (navAlwaysOn()) showNavbar();
+      window.addEventListener('resize', () => {
+        if (navAlwaysOn()) showNavbar();
+      });
+
       window.addEventListener('mousemove', (e) => {
         if (e.clientY < 70) {
           showNavbar();
@@ -1334,7 +1397,11 @@
         }
       });
 
-      // Keep it visible while hovering the navbar itself
+      window.addEventListener('touchstart', (e) => {
+        const y = e.touches[0] ? e.touches[0].clientY : 0;
+        if (y < 80) showNavbar();
+      }, { passive: true });
+
       navbar.addEventListener('mouseenter', showNavbar);
       navbar.addEventListener('mouseleave', hideNavbar);
 
@@ -1343,7 +1410,7 @@
         homeLink.addEventListener('click', (e) => {
           e.preventDefault();
           resetBlocks();
-          hideOverlay();
+          closeSubpage();
         });
       }
 
@@ -1389,8 +1456,7 @@
 
       function openSubpage(which) {
         subpageActive = true;
-
-        // Keep navbar fully visible on subpages (user can use it to navigate)
+        showNavbar();
         if (navbar) navbar.style.opacity = '0.98';
         if (instructions) instructions.style.opacity = '0.15';
         if (helpBtn) helpBtn.style.opacity = '0.15';
@@ -1418,6 +1484,7 @@
 
         // Restore normal UI
         if (navbar) navbar.style.opacity = '';
+        if (!navAlwaysOn()) hideNavbar();
         if (instructions) instructions.style.opacity = '';
         if (helpBtn) helpBtn.style.opacity = '';
       }
