@@ -38,12 +38,15 @@ jobs:
           aws s3 cp index.html s3://${{ env.S3_BUCKET }}/index.html \
             --cache-control "public, max-age=60, must-revalidate" \
             --content-type "text/html; charset=utf-8"
+          aws s3 cp assets/alexandreas-library-screenshot.webp s3://${{ env.S3_BUCKET }}/assets/alexandreas-library-screenshot.webp \
+            --cache-control "public, max-age=86400" \
+            --content-type "image/webp"
 
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CF_DISTRIBUTION_ID }} \
-            --paths "/index.html" "/"
+            --paths "/index.html" "/" "/assets/alexandreas-library-screenshot.webp"
 
       - name: Deployed
         run: echo "✅ Deployed https://chadmurchison.com/"
