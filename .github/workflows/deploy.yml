@@ -41,13 +41,17 @@ jobs:
           aws s3 cp assets/alexandreas-library-screenshot.webp s3://${{ env.S3_BUCKET }}/assets/alexandreas-library-screenshot.webp \
             --cache-control "public, max-age=86400" \
             --content-type "image/webp"
-          # shared app bar (same files as the library and Duki)
-          aws s3 cp assets/chadm-appbar.js s3://${{ env.S3_BUCKET }}/assets/chadm-appbar.js \
-            --cache-control "public, max-age=60, must-revalidate" \
-            --content-type "text/javascript; charset=utf-8"
-          aws s3 cp assets/chadm-appbar.css s3://${{ env.S3_BUCKET }}/assets/chadm-appbar.css \
-            --cache-control "public, max-age=60, must-revalidate" \
-            --content-type "text/css; charset=utf-8"
+          # shared app bar + session cookies helper (same files as the library and Duki)
+          for f in assets/*.js; do
+            aws s3 cp "$f" "s3://${{ env.S3_BUCKET }}/$f" \
+              --cache-control "public, max-age=60, must-revalidate" \
+              --content-type "text/javascript; charset=utf-8"
+          done
+          for f in assets/*.css; do
+            aws s3 cp "$f" "s3://${{ env.S3_BUCKET }}/$f" \
+              --cache-control "public, max-age=60, must-revalidate" \
+              --content-type "text/css; charset=utf-8"
+          done
 
       - name: Invalidate CloudFront cache
         run: |
