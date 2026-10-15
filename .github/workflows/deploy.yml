@@ -41,12 +41,19 @@ jobs:
           aws s3 cp assets/alexandreas-library-screenshot.webp s3://${{ env.S3_BUCKET }}/assets/alexandreas-library-screenshot.webp \
             --cache-control "public, max-age=86400" \
             --content-type "image/webp"
+          # shared app bar (same files as the library and Duki)
+          aws s3 cp assets/chadm-appbar.js s3://${{ env.S3_BUCKET }}/assets/chadm-appbar.js \
+            --cache-control "public, max-age=60, must-revalidate" \
+            --content-type "text/javascript; charset=utf-8"
+          aws s3 cp assets/chadm-appbar.css s3://${{ env.S3_BUCKET }}/assets/chadm-appbar.css \
+            --cache-control "public, max-age=60, must-revalidate" \
+            --content-type "text/css; charset=utf-8"
 
       - name: Invalidate CloudFront cache
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ env.CF_DISTRIBUTION_ID }} \
-            --paths "/index.html" "/" "/assets/alexandreas-library-screenshot.webp"
+            --paths "/index.html" "/" "/assets/*"
 
       - name: Deployed
         run: echo "✅ Deployed https://chadmurchison.com/"

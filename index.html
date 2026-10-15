@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Chad Murchison</title>
+  <!-- Shared chadmurchison.com app tray + profile corner (same files as the library and Duki) -->
+  <link rel="stylesheet" href="assets/chadm-appbar.css">
+  <script type="module" src="assets/chadm-appbar.js"></script>
   <style>
     * {
       margin: 0;
@@ -146,6 +149,15 @@
     .nav-links {
       display: flex;
       gap: 28px;
+    }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    chadm-appbar {
+      --cab-bg: #141414; --cab-bg2: #222; --cab-line: #333; --cab-fg: #e6e6e6; --cab-fg2: #999;
+      --cab-accent: #ff7a3d; --cab-accent2: #c4452b; --cab-shadow: 0 10px 34px #000c;
     }
     .nav-links a {
       color: #999;
@@ -465,9 +477,14 @@
     <div class="nav-content">
       <a href="#" id="homeLink" class="nav-brand">Chad <span class="fire">火</span></a>
 
-      <div class="nav-links">
-        <a href="#" id="projectsLink">Projects</a>
-        <a href="#" id="contactLink">Contact</a>
+      <div class="nav-right">
+        <div class="nav-links">
+          <a href="#" id="projectsLink">Projects</a>
+          <a href="#" id="contactLink">Contact</a>
+        </div>
+        <!-- No sign-in of its own: Log in / Sign up go through the library's hosted sign-in. -->
+        <chadm-appbar app="home" signin-href="https://library.chadmurchison.com/?login"
+          signup-href="https://library.chadmurchison.com/?signup"></chadm-appbar>
       </div>
     </div>
   </nav>
@@ -1395,6 +1412,7 @@
       const hideNavbar = () => {
         if (navAlwaysOn()) return;
         if (subpageActive) return;
+        if (navbar.querySelector('chadm-appbar [aria-expanded="true"]')) return;   // tray / profile menu open
         if (navbarVisible) {
           navbar.classList.remove('visible');
           navbarVisible = false;
