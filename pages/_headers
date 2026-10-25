@@ -1,0 +1,26 @@
+# Cloudflare Pages headers for chadmurchison.com (parity with the S3/CloudFront setup).
+# CloudFront today adds NO security headers and NO CSP for the portfolio; only the per-object
+# Cache-Control values set by the S3 deploy workflows. Rules below reproduce those.
+# Keep rules non-overlapping: Pages joins duplicate header values with a comma.
+
+/
+  Cache-Control: public, max-age=60, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=60, must-revalidate
+
+# Shared app bar + session cookie helper (also the library screenshot; S3 used 1 day for the .webp)
+/assets/*
+  Cache-Control: public, max-age=60, must-revalidate
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+# Keep pages.dev / preview URLs out of search results (custom domains are unaffected).
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+# Optional hardening (NOT live on CloudFront today; enable only after testing the app bar + sign-in):
+# /*
+#   X-Content-Type-Options: nosniff
+#   Referrer-Policy: strict-origin-when-cross-origin

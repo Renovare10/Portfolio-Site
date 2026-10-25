@@ -1,0 +1,10 @@
+# Cloudflare Pages redirects for chadmurchison.com.
+# Nothing is needed to match CloudFront:
+#  - CloudFront Function "directory-index" (/x/ -> /x/index.html, /x -> /x/index.html): Pages serves
+#    /x/index.html for /x/ natively and 308-redirects /x -> /x/. The site has no subdirectory pages.
+#  - 403/404 -> /index.html with 200: no top-level 404.html => Pages SPA fallback serves /index.html (200).
+#  - http -> https: Pages custom domains are HTTPS; verify after cutover (see runbook).
+#  - www: CloudFront serves the same page on www and apex (no redirect). _redirects cannot match on
+#    host, so a www -> apex redirect would be a zone Redirect Rule (extra permission); parity = serve both.
+#  - pretend-casino.chadmurchison.com is intentionally NOT a custom domain of this project.
+# Old SvelteKit leftovers (/_app/*) and /1010-glow/ (dropped by Chad, Oct 25 2026) fall through to the home page.

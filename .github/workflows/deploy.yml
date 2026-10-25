@@ -1,4 +1,4 @@
-name: Deploy Portfolio to S3
+name: Deploy Portfolio (Cloudflare Pages + S3 rollback copy)
 
 on:
   push:
@@ -6,6 +6,8 @@ on:
     paths:
       - 'index.html'
       - 'assets/**'
+      - 'pages/**'
+      - 'scripts/build-pages.sh'
       - '.github/workflows/deploy.yml'
   workflow_dispatch:
 
@@ -20,12 +22,28 @@ jobs:
       cancel-in-progress: true
 
     env:
+      PAGES_PROJECT: chadmurchison-portfolio
       S3_BUCKET: chadm-portfolio
       CF_DISTRIBUTION_ID: E3DGQMN9TWSU05
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # Live site: Cloudflare Pages (chadmurchison.com + www, cut over Oct 25 2026).
+      # dist/ = index.html + assets/ + pages/_headers, pages/_redirects, pages/robots.txt
+      - name: Assemble Pages output
+        run: ./scripts/build-pages.sh dist
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=${{ env.PAGES_PROJECT }} --branch=main --commit-dirty=true
+
+      # TODO(after Nov 8 2026): remove the AWS steps below (S3 sync + CloudFront invalidation) once the
+      # 2-week Cloudflare rollback window is over; they only keep the CloudFront copy current for rollback.
 
       - name: Configure AWS Credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -60,4 +78,4 @@ jobs:
             --paths "/index.html" "/" "/assets/*"
 
       - name: Deployed
-        run: echo "✅ Deployed https://chadmurchison.com/"
+        run: echo "✅ Deployed https://chadmurchison.com/ (Cloudflare Pages) + S3/CloudFront rollback copy"
