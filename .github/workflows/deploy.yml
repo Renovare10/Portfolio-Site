@@ -1,4 +1,4 @@
-name: Deploy Portfolio (Cloudflare Pages + S3 rollback copy)
+name: Deploy Portfolio (Cloudflare Pages)
 
 on:
   push:
@@ -15,7 +15,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
     concurrency:
       group: deploy-portfolio
@@ -23,8 +22,6 @@ jobs:
 
     env:
       PAGES_PROJECT: chadmurchison-portfolio
-      S3_BUCKET: chadm-portfolio
-      CF_DISTRIBUTION_ID: E3DGQMN9TWSU05
 
     steps:
       - name: Checkout code
@@ -42,40 +39,5 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name=${{ env.PAGES_PROJECT }} --branch=main --commit-dirty=true
 
-      # TODO(after Nov 8 2026): remove the AWS steps below (S3 sync + CloudFront invalidation) once the
-      # 2-week Cloudflare rollback window is over; they only keep the CloudFront copy current for rollback.
-
-      - name: Configure AWS Credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::376374282414:role/GitHubActions-Exigency-Deploy
-          aws-region: us-east-2
-
-      - name: Deploy site files to S3
-        run: |
-          aws s3 cp index.html s3://${{ env.S3_BUCKET }}/index.html \
-            --cache-control "public, max-age=60, must-revalidate" \
-            --content-type "text/html; charset=utf-8"
-          aws s3 cp assets/alexandreas-library-screenshot.webp s3://${{ env.S3_BUCKET }}/assets/alexandreas-library-screenshot.webp \
-            --cache-control "public, max-age=86400" \
-            --content-type "image/webp"
-          # shared app bar + session cookies helper (same files as the library and Duki)
-          for f in assets/*.js; do
-            aws s3 cp "$f" "s3://${{ env.S3_BUCKET }}/$f" \
-              --cache-control "public, max-age=60, must-revalidate" \
-              --content-type "text/javascript; charset=utf-8"
-          done
-          for f in assets/*.css; do
-            aws s3 cp "$f" "s3://${{ env.S3_BUCKET }}/$f" \
-              --cache-control "public, max-age=60, must-revalidate" \
-              --content-type "text/css; charset=utf-8"
-          done
-
-      - name: Invalidate CloudFront cache
-        run: |
-          aws cloudfront create-invalidation \
-            --distribution-id ${{ env.CF_DISTRIBUTION_ID }} \
-            --paths "/index.html" "/" "/assets/*"
-
       - name: Deployed
-        run: echo "✅ Deployed https://chadmurchison.com/ (Cloudflare Pages) + S3/CloudFront rollback copy"
+        run: echo "✅ Deployed https://chadmurchison.com/ (Cloudflare Pages)"
