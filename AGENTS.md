@@ -6,6 +6,7 @@ The public portfolio site for Chad Murchison: static HTML with a canvas homepage
 ## Start here
 1. Read `REPO-MAP.md`.
 2. `LIVE.md` is not generated in this repo yet; do not invent one.
+3. Shared programmer playbook: `/home/box/reference/PLAYBOOK.md`.
 
 ## Run / test
 ```bash
