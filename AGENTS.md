@@ -13,6 +13,7 @@ The public portfolio site for Chad Murchison: static HTML with a canvas homepage
 python3 -m http.server 8080    # no build step, no package.json, no test script
 ./scripts/build-pages.sh dist  # optional: assemble the Pages output
 ```
+This repo has no test suite. Run only focused checks locally; CI (`.github/workflows/ci.yml`) runs `./scripts/build-pages.sh dist` (build only, no tests) on every push and pull request; do not deploy until that CI is green.
 
 ## Hard rules
 - No deploy, push to `main`, paid service, or delete without Chad's approval in his own words.
