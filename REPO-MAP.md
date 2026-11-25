@@ -10,7 +10,8 @@
 - `pages/_redirects` — comments only; no active redirect rules. Old `/1010-glow/` and `/_app/*` fall through to the home page.
 - `pages/robots.txt` — allow all crawlers.
 - `scripts/build-pages.sh` — copies `index.html`, `assets/`, and the `pages/` files into the Pages output dir (default `dist/`).
-- `.github/workflows/deploy.yml` — push to `main` (path-filtered) deploys Cloudflare Pages.
+- `.github/workflows/ci.yml` — Pages assemble (`./scripts/build-pages.sh dist`) on every push and pull request; no test suite and no deploy.
+- `.github/workflows/deploy.yml` — push to `main` (path-filtered) deploys Cloudflare Pages. Wait for green CI first.
 
 ## Entry points
 - Open `index.html` locally, or serve the folder statically.
